@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { getApi } from '../../features/substrateApi'; // Import the substrate API functions
 
 const CountryForm = () => {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
+  const [textInput, setTextInput] = useState('');
+  const [api, setApi] = useState(null);
 
   useEffect(() => {
-    // Fetch the list of countries from the REST Countries API
     const fetchCountries = async () => {
       try {
         const response = await fetch('https://restcountries.com/v3.1/all');
         const data = await response.json();
         
-        // Sort countries alphabetically by name
         const sortedCountries = data.sort((a, b) => 
           a.name.common.localeCompare(b.name.common)
         );
@@ -23,15 +24,40 @@ const CountryForm = () => {
     };
 
     fetchCountries();
+    
+    const initializeApi = async () => {
+      const apiInstance = await getApi();
+      setApi(apiInstance);
+    };
+    
+    initializeApi();
   }, []);
 
-  const handleChange = (event) => {
+  const handleCountryChange = (event) => {
     setSelectedCountry(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleTextChange = (event) => {
+    setTextInput(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    alert(`Selected Country: ${selectedCountry}`);
+    
+    if (!api) {
+      alert('API not initialized');
+      return;
+    }
+
+    try {
+      const tx = api.tx.yourModuleName.yourExtrinsicMethod(selectedCountry, textInput); // Replace with your actual module and extrinsic method
+      const hash = await tx.signAndSend(api.getAccounts().address); // Replace `address` with actual account address if necessary
+
+      alert(`Transaction sent with hash: ${hash.toString()}`);
+    } catch (error) {
+      console.error('Error sending transaction:', error);
+      alert('Error sending transaction');
+    }
   };
 
   return (
@@ -42,7 +68,7 @@ const CountryForm = () => {
         <select
           id="country"
           value={selectedCountry}
-          onChange={handleChange}
+          onChange={handleCountryChange}
         >
           <option value="">Select a country</option>
           {countries.map((country) => (
@@ -51,6 +77,15 @@ const CountryForm = () => {
             </option>
           ))}
         </select>
+
+        <label htmlFor="text-input">Text Input:</label>
+        <input
+          type="text"
+          id="text-input"
+          value={textInput}
+          onChange={handleTextChange}
+        />
+
         <button type="submit">Submit</button>
       </form>
     </div>
