@@ -1,35 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { getApi } from '../../features/substrateApi'; // Import the substrate API functions
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ContractPromise } from '@polkadot/api-contract';
+import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 
 const CountryForm = () => {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [textInput, setTextInput] = useState('');
+  const [travelDetails, setTravelDetails] = useState('');
   const [api, setApi] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [contractResult, setContractResult] = useState('');
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         const response = await fetch('https://restcountries.com/v3.1/all');
         const data = await response.json();
-        
-        const sortedCountries = data.sort((a, b) => 
+        const sortedCountries = data.sort((a, b) =>
           a.name.common.localeCompare(b.name.common)
         );
-        
         setCountries(sortedCountries);
       } catch (error) {
         console.error('Error fetching countries:', error);
       }
     };
 
-    fetchCountries();
-    
     const initializeApi = async () => {
-      const apiInstance = await getApi();
+      const wsProvider = new WsProvider('wss://your-substrate-node-url');
+      const apiInstance = await ApiPromise.create({ provider: wsProvider });
       setApi(apiInstance);
+
+      // Replace with your contract's ABI and address
+      const abi = /* Your contract ABI */;
+      const contractAddress = 'your-contract-address';
+      const contractInstance = new ContractPromise(apiInstance, abi, contractAddress);
+      setContract(contractInstance);
     };
-    
+
+    fetchCountries();
     initializeApi();
   }, []);
 
@@ -37,32 +45,62 @@ const CountryForm = () => {
     setSelectedCountry(event.target.value);
   };
 
-  const handleTextChange = (event) => {
-    setTextInput(event.target.value);
+  const handleTravelDetailsChange = (event) => {
+    setTravelDetails(event.target.value);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    if (!api) {
-      alert('API not initialized');
+    if (!api || !contract) {
+      alert('API or contract not initialized');
       return;
     }
 
     try {
-      const tx = api.tx.yourModuleName.yourExtrinsicMethod(selectedCountry, textInput); // Replace with your actual module and extrinsic method
-      const hash = await tx.signAndSend(api.getAccounts().address); // Replace `address` with actual account address if necessary
+      // Enable the extension
+      await web3Enable('Your dApp Name');
+      const accounts = await web3Accounts();
 
-      alert(`Transaction sent with hash: ${hash.toString()}`);
+      if (accounts.length === 0) {
+        console.error('No accounts found');
+        return;
+      }
+
+      // Call the contract's constructor to create a new instance
+      const { gasRequired } = await contract.query.new(
+        accounts[0].address,
+        { gasLimit: -1 },
+        selectedCountry,
+        travelDetails
+      );
+
+      // Adjust gas limit as needed
+      const gasLimit = gasRequired.toNumber() * 1.2;
+
+      // Send the actual transaction
+      await contract.tx
+        .new({ gasLimit }, selectedCountry, travelDetails)
+        .signAndSend(accounts[0].address, (result) => {
+          if (result.status.isInBlock) {
+            console.log('Transaction included in block:', result.status.asInBlock.toHex());
+          } else if (result.status.isFinalized) {
+            console.log('Transaction finalized:', result.status.asFinalized.toHex());
+            alert('Transaction successful!');
+          }
+        });
+
+      // Call the get function to retrieve the stored data
+      const { result } = await contract.query.get(accounts[0].address, {});
+      setContractResult(result.toHuman());
     } catch (error) {
-      console.error('Error sending transaction:', error);
-      alert('Error sending transaction');
+      console.error('Error interacting with contract:', error);
+      alert('Error interacting with contract');
     }
   };
 
   return (
     <div>
-      <h2>Select a Country</h2>
+      <h2>Select a Country and Enter Travel Details</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="country">Country:</label>
         <select
@@ -78,18 +116,27 @@ const CountryForm = () => {
           ))}
         </select>
 
-        <label htmlFor="text-input">Text Input:</label>
+        <label htmlFor="travel-details">Travel Details:</label>
         <input
           type="text"
-          id="text-input"
-          value={textInput}
-          onChange={handleTextChange}
+          id="travel-details"
+          value={travelDetails}
+          onChange={handleTravelDetailsChange}
         />
 
         <button type="submit">Submit</button>
       </form>
+
+      {contractResult && (
+        <div>
+          <h3>Contract Result:</h3>
+          <p>{contractResult}</p>
+        </div>
+      )}
     </div>
   );
 };
+
+
 
 export default CountryForm;

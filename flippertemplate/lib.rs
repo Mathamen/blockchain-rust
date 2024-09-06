@@ -1,37 +1,82 @@
-#![cfg_attr(not(feature = "std"), no_std, no_main)]
+#![cfg_attr(not(feature = "std"), no_std)]
+
+use ink::prelude::vec::Vec;
+use ink::storage::Mapping;
 
 #[ink::contract]
-pub mod flipper {
-    #[ink(storage)]
-    pub struct Flipper {
-        value: bool,
+mod user_country_info {
+    use super::*;
+
+    #[derive(Debug, Clone, PartialEq, Eq, scale::Encode, scale::Decode)]
+    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+    pub struct CountryInfo {
+        country: String,
+        info: String,
     }
 
-    impl Flipper {
-        /// Creates a new flipper smart contract initialized with the given value.
+    #[ink(storage)]
+    pub struct UserCountryInfo {
+        user_data: Mapping<AccountId, Vec<CountryInfo>>,
+    }
+
+    impl UserCountryInfo {
         #[ink(constructor)]
-        pub fn new(init_value: bool) -> Self {
-            Self { value: init_value }
+        pub fn new() -> Self {
+            Self {
+                user_data: Mapping::new(),
+            }
         }
 
-
-        
-        /// Creates a new flipper smart contract initialized to `false`.
-        #[ink(constructor)]
-        pub fn new_default() -> Self {
-            Self::new(Default::default())
-        }
-
-        /// Flips the current value of the Flipper's boolean.
         #[ink(message)]
-        pub fn flip(&mut self) {
-            self.value = !self.value;
+        pub fn add_country_info(&mut self, country: String, info: String) {
+            let caller = self.env().caller();
+            let country_info = CountryInfo { country, info };
+            let mut user_countries = self.user_data.get(caller).unwrap_or_default();
+            user_countries.push(country_info);
+            self.user_data.insert(caller, &user_countries);
         }
 
-        /// Returns the current value of the Flipper's boolean.
         #[ink(message)]
-        pub fn get(&self) -> bool {
-            self.value
+        pub fn get_user_country_info(&self) -> Vec<CountryInfo> {
+            let caller = self.env().caller();
+            self.user_data.get(caller).unwrap_or_default()
+        }
+
+        #[ink(message)]
+        pub fn update_country_info(&mut self, index: u32, new_info: String) -> bool {
+            let caller = self.env().caller();
+            let mut user_countries = self.user_data.get(caller).unwrap_or_default();
+            if let Some(country_info) = user_countries.get_mut(index as usize) {
+                country_info.info = new_info;
+                self.user_data.insert(caller, &user_countries);
+                true
+            } else {
+                false
+            }
+        }
+
+        #[ink(message)]
+        pub fn remove_country_info(&mut self, index: u32) -> bool {
+            let caller = self.env().caller();
+            let mut user_countries = self.user_data.get(caller).unwrap_or_default();
+            if index < user_countries.len() as u32 {
+                user_countries.remove(index as usize);
+                self.user_data.insert(caller, &user_countries);
+                true
+            } else {
+                false
+            }
+        }
+
+        #[ink(message)]
+        pub fn get_user_countries(&self) -> Vec<String> {
+            let caller = self.env().caller();
+            self.user_data
+                .get(caller)
+                .unwrap_or_default()
+                .iter()
+                .map(|ci| ci.country.clone())
+                .collect()
         }
     }
 
@@ -40,127 +85,40 @@ pub mod flipper {
         use super::*;
 
         #[ink::test]
-        fn default_works() {
-            let flipper = Flipper::new_default();
-            assert!(!flipper.get());
+        fn add_and_get_country_info_works() {
+            let mut contract = UserCountryInfo::new();
+            contract.add_country_info("France".into(), "Info about France".into());
+            let user_info = contract.get_user_country_info();
+            assert_eq!(user_info.len(), 1);
+            assert_eq!(user_info[0].country, "France");
+            assert_eq!(user_info[0].info, "Info about France");
         }
 
         #[ink::test]
-        fn it_works() {
-            let mut flipper = Flipper::new(false);
-            assert!(!flipper.get());
-            flipper.flip();
-            assert!(flipper.get());
-        }
-    }
-
-    #[cfg(all(test, feature = "e2e-tests"))]
-    mod e2e_tests {
-        use super::*;
-        use ink_e2e::ContractsBackend;
-
-        type E2EResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
-
-        #[ink_e2e::test]
-        async fn it_works<Client: E2EBackend>(mut client: Client) -> E2EResult<()> {
-            // given
-            let mut constructor = FlipperRef::new(false);
-            let contract = client
-                .instantiate("flipper", &ink_e2e::alice(), &mut constructor)
-                .submit()
-                .await
-                .expect("instantiate failed");
-            let mut call_builder = contract.call_builder::<Flipper>();
-
-            let get = call_builder.get();
-            let get_res = client.call(&ink_e2e::bob(), &get).dry_run().await?;
-            assert!(matches!(get_res.return_value(), false));
-
-            // when
-            let flip = call_builder.flip();
-            let _flip_res = client
-                .call(&ink_e2e::bob(), &flip)
-                .submit()
-                .await
-                .expect("flip failed");
-
-            // then
-            let get = call_builder.get();
-            let get_res = client.call(&ink_e2e::bob(), &get).dry_run().await?;
-            assert!(matches!(get_res.return_value(), true));
-
-            Ok(())
+        fn update_country_info_works() {
+            let mut contract = UserCountryInfo::new();
+            contract.add_country_info("Germany".into(), "Old info".into());
+            assert!(contract.update_country_info(0, "New info".into()));
+            let user_info = contract.get_user_country_info();
+            assert_eq!(user_info[0].info, "New info");
         }
 
-        #[ink_e2e::test]
-        async fn default_works<Client: E2EBackend>(mut client: Client) -> E2EResult<()> {
-            // given
-            let mut constructor = FlipperRef::new_default();
-
-            // when
-            let contract = client
-                .instantiate("flipper", &ink_e2e::bob(), &mut constructor)
-                .submit()
-                .await
-                .expect("instantiate failed");
-            let call_builder = contract.call_builder::<Flipper>();
-
-            // then
-            let get = call_builder.get();
-            let get_res = client.call(&ink_e2e::bob(), &get).dry_run().await?;
-            assert!(matches!(get_res.return_value(), false));
-
-            Ok(())
+        #[ink::test]
+        fn remove_country_info_works() {
+            let mut contract = UserCountryInfo::new();
+            contract.add_country_info("Italy".into(), "Info about Italy".into());
+            assert!(contract.remove_country_info(0));
+            let user_info = contract.get_user_country_info();
+            assert_eq!(user_info.len(), 0);
         }
 
-        /// This test illustrates how to test an existing on-chain contract.
-        ///
-        /// You can utilize this to e.g. create a snapshot of a production chain
-        /// and run the E2E tests against a deployed contract there.
-        /// This process is explained [here](https://use.ink/5.x/basics/contract-testing/chain-snapshot).
-        ///
-        /// Before executing the test:
-        ///   * Make sure you have a node running in the background,
-        ///   * Supply the environment variable `CONTRACT_HEX` that points to a deployed
-        ///     flipper contract. You can take the SS58 address which `cargo contract
-        ///     instantiate` gives you and convert it to hex using `subkey inspect
-        ///     <SS58>`.
-        ///
-        /// The test is then run like this:
-        ///
-        /// ```
-        /// # The env variable needs to be set, otherwise `ink_e2e` will spawn a new
-        /// # node process for each test.
-        /// $ export CONTRACTS_NODE_URL=ws://127.0.0.1:9944
-        ///
-        /// $ export CONTRACT_HEX=0x2c75f0aa09dbfbfd49e6286a0f2edd3b4913f04a58b13391c79e96782f5713e3
-        /// $ cargo test --features e2e-tests e2e_test_deployed_contract -- --ignored
-        /// ```
-        ///
-        /// # Developer Note
-        ///
-        /// The test is marked as ignored, as it has the above pre-conditions to succeed.
-        #[ink_e2e::test]
-        #[ignore]
-        async fn e2e_test_deployed_contract<Client: E2EBackend>(
-            mut client: Client,
-        ) -> E2EResult<()> {
-            // given
-            let addr = std::env::var("CONTRACT_ADDR_HEX")
-                .unwrap()
-                .replace("0x", "");
-            let acc_id = hex::decode(addr).unwrap();
-            let acc_id = AccountId::try_from(&acc_id[..]).unwrap();
-
-            // when
-            // Invoke `Flipper::get()` from Bob's account
-            let call_builder = ink_e2e::create_call_builder::<Flipper>(acc_id);
-            let get = call_builder.get();
-            let get_res = client.call(&ink_e2e::bob(), &get).dry_run().await?;
-
-            // then
-            assert!(matches!(get_res.return_value(), true));
-            Ok(())
+        #[ink::test]
+        fn get_user_countries_works() {
+            let mut contract = UserCountryInfo::new();
+            contract.add_country_info("Spain".into(), "Info about Spain".into());
+            contract.add_country_info("Portugal".into(), "Info about Portugal".into());
+            let countries = contract.get_user_countries();
+            assert_eq!(countries, vec!["Spain".to_string(), "Portugal".to_string()]);
         }
     }
 }
