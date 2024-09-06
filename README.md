@@ -1,14 +1,12 @@
-Como rodar este projeto?
+# Projeto Rust-Blockchain 2024.1
 
-Precisa de 2 terminais:
+## Compilar o projeto:
 
-terminal para frontend: npm start no front end
+terminal para frontend: ``` npm start ``` na pasta frontend
 
 terminal para backend: 
 baixe o substrate contract node
 coloque em uma pasta node
 execute o chamando por ./
 
-para buildar o contrato: cargo contract build (precisa das bibliotecas de smart contracts)
-
-
+para buildar o contrato: ``` cargo contract build ``` (precisa das bibliotecas de smart contracts)
