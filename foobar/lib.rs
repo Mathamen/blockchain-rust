@@ -1,38 +1,19 @@
-#![cfg_attr(not(feature = "std"), no_std, no_main)]
+![cfg_attr(not(feature = "std"), no_std, no_main)]
 
 #[ink::contract]
 mod foobar {
     use ink::prelude::string::String;
-    //use ink::storage::Mapping;
-    use ink::prelude::vec::Vec;
 
-
-    // Usar esses depois
-    //#[ink(storage)]
-    pub struct Database{
-        users_list: Vec<User>
-    }
-
-    pub struct User{
-        id: AccountId,
-        travel_list: Vec<Travel>
-
-    }
-
-    pub struct Travel{
-        pais: String,
-        descricao: String
-
-    }
-
-
+    /// Defines the storage of your contract.
+    /// Add new fields to the below struct in order
+    /// to add new static storage fields to your contract.
     #[ink(storage)]
     pub struct Foobar {
         
         pais: String,
         detalhe_viagem: String
     }
-    
+    pub struct user
 
     impl Foobar {
         /// Constructor that initializes the bool value to the given init_value.
