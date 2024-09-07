@@ -1,11 +1,10 @@
-/* Navbar Styling */
 .navbar {
-  background-color: #33372C; /* Dark Green */
+  background-color: #33372C;
   padding: 15px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  animation: fadeIn 1s ease-in-out; /* Fade-in animation */
+  animation: fadeIn 1s ease-in-out; 
 }
 
 .navbar-container {
@@ -18,16 +17,16 @@
 }
 
 .navbar-logo {
-  color: #FFE5CF; /* Orange */
+  color: #FFE5CF;
   font-size: 28px;
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.3s ease-in-out; /* Animation for hover */
+  transition: color 0.3s ease-in-out; 
 }
 
 .navbar-logo:hover {
-  color: #FF885B; /* Beige on hover */
+  color: #FF885B; 
 }
 
 .navbar-menu {
@@ -38,12 +37,12 @@
 }
 
 .navbar-item {
-  margin-left: 30px; /* Space between menu items */
+  margin-left: 30px;
 }
 
 .navbar-item a {
   position: relative;
-  color: #FFE5CF; /* Beige */
+  color: #FFE5CF;
   text-decoration: none;
   font-size: 18px;
   font-weight: 500;
@@ -55,7 +54,7 @@
   position: absolute;
   width: 0;
   height: 2px;
-  background-color: #FF885B; /* Orange underline */
+  background-color: #FF885B; 
   bottom: -3px;
   left: 0;
   transition: width 0.3s ease-in-out;
@@ -66,10 +65,9 @@
 }
 
 .navbar-item a:hover {
-  color: #FF885B; /* Orange on hover */
+  color: #FF885B; 
 }
 
-/* Animation: Fade in effect for the navbar */
 @keyframes fadeIn {
   from {
     opacity: 0;

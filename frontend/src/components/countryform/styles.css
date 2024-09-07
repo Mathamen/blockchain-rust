@@ -1,4 +1,3 @@
-/* Country Form Styles */
 .country-form {
     padding: 20px;
     max-width: 80%;
@@ -9,7 +8,7 @@
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
-    color: #33372C; /* Dark Green */
+    color: #33372C;
   }
   
   .country-form select, 
@@ -17,14 +16,14 @@
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
-    border: 2px solid #557C56; /* Green */
+    border: 2px solid #557C56;
     border-radius: 5px;
     font-size: 16px;
   }
   
   .country-form button {
     padding: 10px 20px;
-    background-color: #FF885B; /* Orange */
+    background-color: #FF885B;
     color: white;
     border: none;
     border-radius: 5px;
@@ -34,43 +33,41 @@
   }
   
   .country-form button:hover {
-    background-color: #E67648; /* Darker Orange */
+    background-color: #E67648;
   }
   
   .country-form h2 {
     text-align: center;
-    color: #557C56; /* Green */
+    color: #557C56;
     margin-bottom: 20px;
   }
   
-  /* Responsive Form */
   @media (max-width: 768px) {
     .country-form {
       padding: 15px;
     }
   }
   
-/* Styling the Select Dropdown */
 .country-form select {
   width: 100%;
   padding: 12px;
-  border: 2px solid #557C56; /* Green border */
+  border: 2px solid #557C56;
   border-radius: 5px;
-  background-color: #FFE5CF; /* Beige background */
-  color: #33372C; /* Dark Green text */
+  background-color: #FFE5CF;
+  color: #33372C;
   font-size: 16px;
   cursor: pointer;
-  appearance: none; /* Removes default dropdown arrow */
-  -webkit-appearance: none; /* Removes default dropdown arrow in Safari */
-  -moz-appearance: none; /* Removes default dropdown arrow in Firefox */
-  background-image: url('../../images/drop-down-arrow.png'); /* Custom dropdown arrow */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('../../images/drop-down-arrow.png');
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
 
 .country-form select:focus {
   outline: none;
-  border-color: #FF885B; /* Change border color on focus */
+  border-color: #FF885B; 
 }
 
 .country-form select option {

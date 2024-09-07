@@ -50,26 +50,24 @@ body {
   }
   
   form button:hover {
-    background-color: #E67648; /* Darker Orange on hover */
+    background-color: #E67648; 
   }
   
-  /* Map Styles */
   .map-container {
     margin-top: 30px;
     height: 80vh;
-    border: 2px solid #557C56; /* Green border */
+    border: 2px solid #557C56; 
     border-radius: 10px;
   }
   
-  /* Navbar Styles */
   .navbar {
-    background-color: #33372C; /* Dark Green */
+    background-color: #33372C;
     padding: 10px 0;
     text-align: center;
   }
   
   .navbar a {
-    color: #ffefe1; /* Beige */
+    color: #ffefe1;
     padding: 14px 20px;
     text-decoration: none;
     font-weight: bold;

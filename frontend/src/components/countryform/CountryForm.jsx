@@ -6,7 +6,7 @@ const CountryForm = ({ setCountriesStatus }) => {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [textInput, setTextInput] = useState('');
-  const [visitStatus, setVisitStatus] = useState('visited'); // New state to handle visit status
+  const [visitStatus, setVisitStatus] = useState('visited');
   const [api, setApi] = useState(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const CountryForm = ({ setCountriesStatus }) => {
   }, []);
 
   const handleCountryChange = (event) => {
-    setSelectedCountry(event.target.value); // Store ISO code (cca3)
+    setSelectedCountry(event.target.value);
   };
 
   const handleTextChange = (event) => {
@@ -44,7 +44,7 @@ const CountryForm = ({ setCountriesStatus }) => {
   };
 
   const handleStatusChange = (event) => {
-    setVisitStatus(event.target.value); // Update visit status
+    setVisitStatus(event.target.value);
   };
 
   const handleSubmit = async (event) => {
@@ -57,17 +57,15 @@ const CountryForm = ({ setCountriesStatus }) => {
 
     try {
       const tx = api.tx.yourModuleName.yourExtrinsicMethod(selectedCountry, textInput);
-      const hash = await tx.signAndSend(api.getAccounts().address); // Replace with actual account address
+      const hash = await tx.signAndSend(api.getAccounts().address);
 
       alert(`Transaction sent with hash: ${hash.toString()}`);
 
-      // Update parent component with selected country ISO and visit status
       setCountriesStatus((prevStatus) => ({
         ...prevStatus,
         [visitStatus]: [...prevStatus[visitStatus], selectedCountry],
       }));
 
-      // Clear form after submission
       setSelectedCountry('');
       setTextInput('');
       setVisitStatus('visited');
@@ -103,7 +101,6 @@ const CountryForm = ({ setCountriesStatus }) => {
           onChange={handleTextChange}
         />
 
-        {/* New dropdown for visit status */}
         <label htmlFor="visit-status">Visit Status:</label>
         <select id="visit-status" value={visitStatus} onChange={handleStatusChange}>
           <option value="visited">Visited</option>
