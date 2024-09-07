@@ -1,0 +1,116 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #fff8f2; /* bege mais clarin */
+    color: #33372C; /* Dark Green */
+  }
+  
+  h1, h2 {
+    color: #557C56; /* Green */
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  /* Container Styles */
+  .container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffefe1; /* Beige */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form Styling */
+  form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #33372C; /* Dark Green */
+  }
+  
+  form select, form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #557C56; /* Green */
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  form button {
+    padding: 10px 20px;
+    background-color: #FF885B; /* Orange */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  form button:hover {
+    background-color: #E67648; /* Darker Orange on hover */
+  }
+  
+  /* Map Styles */
+  .map-container {
+    margin-top: 30px;
+    height: 80vh;
+    border: 2px solid #557C56; /* Green border */
+    border-radius: 10px;
+  }
+  
+  /* Navbar Styles */
+  .navbar {
+    background-color: #33372C; /* Dark Green */
+    padding: 10px 0;
+    text-align: center;
+  }
+  
+  .navbar a {
+    color: #ffefe1; /* Beige */
+    padding: 14px 20px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: #33372C; /* Dark Green */
+    color: #ffefe1; /* Beige */
+    padding: 10px 0;
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  /* Button for interactive elements */
+  .button {
+    padding: 12px 20px;
+    background-color: #557C56; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .button:hover {
+    background-color: #445E45; /* Darker Green */
+  }
+  
+  /* Media Queries for Responsiveness */
+  @media (max-width: 768px) {
+    form select, form input[type="text"], form button {
+      font-size: 14px;
+    }
+  
+    h1, h2 {
+      font-size: 24px;
+    }
+  
+    .map-container {
+      height: 60vh;
+    }
+  }
+  

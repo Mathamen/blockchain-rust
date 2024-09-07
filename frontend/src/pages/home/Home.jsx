@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
+import MapComponent from '../../components/map/Map';
+import CountryForm from '../../components/countryform/CountryForm';
+import '../../css/global.css'
 
 const Home = () => {
+  const [countriesStatus, setCountriesStatus] = useState({
+    visited: [],
+    wantToVisit: [],
+    notVisited: [],
+  });
+
   return (
-    <div>
-      <h2>Home Page</h2>
-      <p>Welcome to the Home Page!</p>
+    <div className="container">
+      <CountryForm setCountriesStatus={setCountriesStatus} />
+      <div className="map-container">
+        <MapComponent countriesData={countriesStatus} />
+      </div>
     </div>
   );
 };

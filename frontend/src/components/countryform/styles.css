@@ -1,0 +1,78 @@
+/* Country Form Styles */
+.country-form {
+    padding: 20px;
+    max-width: 80%;
+    margin: 0 auto;
+  }
+  
+  .country-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #33372C; /* Dark Green */
+  }
+  
+  .country-form select, 
+  .country-form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #557C56; /* Green */
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .country-form button {
+    padding: 10px 20px;
+    background-color: #FF885B; /* Orange */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .country-form button:hover {
+    background-color: #E67648; /* Darker Orange */
+  }
+  
+  .country-form h2 {
+    text-align: center;
+    color: #557C56; /* Green */
+    margin-bottom: 20px;
+  }
+  
+  /* Responsive Form */
+  @media (max-width: 768px) {
+    .country-form {
+      padding: 15px;
+    }
+  }
+  
+/* Styling the Select Dropdown */
+.country-form select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #557C56; /* Green border */
+  border-radius: 5px;
+  background-color: #FFE5CF; /* Beige background */
+  color: #33372C; /* Dark Green text */
+  font-size: 16px;
+  cursor: pointer;
+  appearance: none; /* Removes default dropdown arrow */
+  -webkit-appearance: none; /* Removes default dropdown arrow in Safari */
+  -moz-appearance: none; /* Removes default dropdown arrow in Firefox */
+  background-image: url('../../images/drop-down-arrow.png'); /* Custom dropdown arrow */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.country-form select:focus {
+  outline: none;
+  border-color: #FF885B; /* Change border color on focus */
+}
+
+.country-form select option {
+  color: #33372C; 
+}

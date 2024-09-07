@@ -1,44 +1,82 @@
-/* Navbar.css */
+/* Navbar Styling */
 .navbar {
-    background-color: #333;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  background-color: #33372C; /* Dark Green */
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeIn 1s ease-in-out; /* Fade-in animation */
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.navbar-logo {
+  color: #FFE5CF; /* Orange */
+  font-size: 28px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out; /* Animation for hover */
+}
+
+.navbar-logo:hover {
+  color: #FF885B; /* Beige on hover */
+}
+
+.navbar-menu {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-item {
+  margin-left: 30px; /* Space between menu items */
+}
+
+.navbar-item a {
+  position: relative;
+  color: #FFE5CF; /* Beige */
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-item a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: #FF885B; /* Orange underline */
+  bottom: -3px;
+  left: 0;
+  transition: width 0.3s ease-in-out;
+}
+
+.navbar-item a:hover::after {
+  width: 100%;
+}
+
+.navbar-item a:hover {
+  color: #FF885B; /* Orange on hover */
+}
+
+/* Animation: Fade in effect for the navbar */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
-  .navbar-container {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .navbar-logo {
-    color: #fff;
-    font-size: 24px;
-    text-decoration: none;
-  }
-  
-  .navbar-menu {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .navbar-item {
-    margin-left: 20px;
-  }
-  
-  .navbar-item a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 18px;
-  }
-  
-  .navbar-item a:hover {
-    text-decoration: underline;
-  }
-  
+}
