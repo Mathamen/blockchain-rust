@@ -52,7 +52,7 @@ const MapComponent = ({ countriesData }) => {
     });
 
     // mostrar nome do país qnd passa o mouse por cima
-    layer.bindTooltip(feature.properties.ADMIN, {
+    layer.bindTooltip(feature.properties.name, {
       permanent: false,
       direction: 'center',
       className: 'country-tooltip',

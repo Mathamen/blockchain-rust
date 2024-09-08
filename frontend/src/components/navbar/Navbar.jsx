@@ -14,6 +14,10 @@ const Navbar = () => {
           <li className="navbar-item">
             <Link to="/country-form">Country Form</Link>
           </li>
+          <li className="navbar-item">
+            <Link to="/fetch">Fetch all travels</Link>
+          </li>
+
         </ul>
       </div>
     </nav>
