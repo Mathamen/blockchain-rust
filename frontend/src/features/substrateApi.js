@@ -8,7 +8,7 @@ export const connectToSubstrate = async () => {
   if (api) return api; // Return existing instance if already connected
 
   // Connect to the Substrate node
-  const wsProvider = new WsProvider('wss://your-substrate-node-url'); // Replace with your Substrate node URL
+  const wsProvider = new WsProvider('ws://127.0.0.1:9944'); // Replace with your Substrate node URL
   api = await ApiPromise.create({ provider: wsProvider });
 
   return api;

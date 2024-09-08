@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@polkadot/api": "^12.4.2",
+    "@polkadot/api-contract": "^12.4.2",
+    "@polkadot/extension-dapp": "^0.52.3",
     "@react-google-maps/api": "^2.19.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
