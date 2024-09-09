@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { web3Enable, web3Accounts, web3FromSource } from '@polkadot/extension-dapp'; // Add web3FromSource
-import { getApi } from '../../features/substrateApi'; // Import the substrate API functions
-import metadata from './metadata.json'; // Ensure the correct metadata file
+import { web3Enable, web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
+import { getApi } from '../../features/substrateApi';
+import metadata from './metadata.json';
 import './styles.css';
 
 const CountryForm = ({ setCountriesStatus }) => {
@@ -30,13 +30,14 @@ const CountryForm = ({ setCountriesStatus }) => {
     const initializeApi = async () => {
       try {
         const apiInstance = await getApi();
+        setApi(apiInstance); // Ensure API is set before using it
+
         const { ContractPromise } = await import('@polkadot/api-contract');
         
         // Initialize contract with the contract address
-        const contract = new ContractPromise(apiInstance, metadata, '5H7xVzeCv24CHVr5giGqYUpUXbKsWPfvvuuFX2sjHL8nCaED');
+        const contractInstance = new ContractPromise(apiInstance, metadata, '5DZKVVGVkbWoKJoB2Sm9YhCJZ8yJ3wncUpf8VAT6deBkzN85');
         
-        setContract(contract);
-        setApi(apiInstance);
+        setContract(contractInstance);
       } catch (error) {
         console.error('Error initializing API or contract:', error);
       }
@@ -56,7 +57,9 @@ const CountryForm = ({ setCountriesStatus }) => {
         if (allAccounts.length > 0) {
           setAccount(allAccounts[0].address); // Set the first account as default
           const injector = await web3FromSource(allAccounts[0].meta.source);
-          api.setSigner(injector.signer); // Set the signer for the API
+          if (api) {
+            api.setSigner(injector.signer); // Set the signer for the API only if API is initialized
+          }
         } else {
           alert('Please connect your Polkadot.js extension.');
         }
@@ -67,10 +70,8 @@ const CountryForm = ({ setCountriesStatus }) => {
   
     // Fetch countries, initialize the API, and fetch accounts
     fetchCountries();
-    initializeApi();
-    fetchAccount();
-  }, []);
-  
+    initializeApi().then(fetchAccount); // Ensure API is initialized before fetching account
+  }, [api]); // Ensure the effect re-runs only when `api` is available
 
   const handleCountryChange = (event) => {
     setSelectedCountry(event.target.value);
@@ -93,56 +94,51 @@ const CountryForm = ({ setCountriesStatus }) => {
     }
   
     try {
-      // Debugging
-      console.log("Selected Country:", selectedCountry);
-      console.log("Text Input:", textInput);
-      console.log("Visit Status:", visitStatus);
-      console.log("Account:", account);
-  
       const gasLimit = -1; // Use automatic gas limit estimation
       const storageDepositLimit = null; // Can be null if not required
   
       // Query the contract to estimate gas and storage required
       const { gasRequired, storageDeposit } = await contract.query.setMessage(
-        account, // Address of the sender
+        account,
         { gasLimit, storageDepositLimit },
         selectedCountry,
         textInput,
         visitStatus,
-        account // Sending account
-      );
-      
-      console.log("Gas Required:", gasRequired.toString());
-      console.log("Storage Deposit:", storageDeposit.toString());
-  
-      // Sudo: Wrap the contract call in a sudo transaction
-      const sudoTx = api.tx.sudo.sudo(
-        contract.tx.setMessage(
-          { gasLimit: gasRequired, storageDepositLimit: storageDeposit.isChargeable ? storageDeposit.asCharge : null },
-          selectedCountry,
-          textInput,
-          visitStatus,
-          account
-        )
+        account
       );
   
       // Send the transaction
-      const hash = await sudoTx.signAndSend(account, ({ status }) => {
-        if (status.isInBlock) {
-          console.log(`Transaction included at blockHash ${status.asInBlock}`);
-        } else if (status.isFinalized) {
-          console.log(`Transaction finalized at blockHash ${status.asFinalized}`);
-        }
-      });
+      const unsub = await api.tx.contracts
+        .call(
+          contract.address, // Contract address
+          0, // Value to send with the call (e.g. 0 for no funds)
+          gasRequired, // Use estimated gas
+          storageDeposit.isChargeable ? storageDeposit.asCharge : null, // Optional storage deposit
+          contract.tx.setMessage(
+            { gasLimit: gasRequired, storageDepositLimit },
+            selectedCountry,
+            textInput,
+            visitStatus,
+            account
+          )
+        )
+        .signAndSend(account, ({ status }) => {
+          if (status.isInBlock) {
+            console.log(`Transaction included at blockHash ${status.asInBlock}`);
+          } else if (status.isFinalized) {
+            console.log(`Transaction finalized at blockHash ${status.asFinalized}`);
+            unsub(); // Unsubscribe from further updates
+          }
+        });
   
-      alert(`Transaction sent with hash: ${hash.toString()}`);
+      alert(`Transaction sent with hash: ${unsub}`);
   
-      // Update state and reset form
       setCountriesStatus((prevStatus) => ({
         ...prevStatus,
         [visitStatus]: [...prevStatus[visitStatus], selectedCountry],
       }));
   
+      // Reset form
       setSelectedCountry('');
       setTextInput('');
       setVisitStatus('visited');
@@ -152,8 +148,6 @@ const CountryForm = ({ setCountriesStatus }) => {
     }
   };
   
-  
-
   return (
     <div className="country-form">
       <h2>Select a Country</h2>

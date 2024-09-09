@@ -17,7 +17,7 @@ const FetchMessages = () => {
         const { ContractPromise } = await import('@polkadot/api-contract');
         
         // Initialize contract with the contract address
-        const contractInstance = new ContractPromise(apiInstance, metadata, '5H7xVzeCv24CHVr5giGqYUpUXbKsWPfvvuuFX2sjHL8nCaED');
+        const contractInstance = new ContractPromise(apiInstance, metadata, '5DZKVVGVkbWoKJoB2Sm9YhCJZ8yJ3wncUpf8VAT6deBkzN85');
         
         setContract(contractInstance);
         setApi(apiInstance);
@@ -64,24 +64,25 @@ const FetchMessages = () => {
     setLoading(true);
   
     try {
-      // Debugging: Log contract query methods
-      console.log("Contract query methods:", contract.query);
-  
+      // Ensure the contract's query function is accessible and working
       if (!contract.query.fetch) {
         throw new Error('Contract does not have fetch function.');
       }
   
-      // Call the contract's fetch function
+      // Fetch data from the contract
       const result = await contract.query.fetch(
         account,
         { gasLimit: -1 } // Automatic gas estimation
       );
   
-      // Debugging: Log the result to inspect its structure
+      // Log the contract call result to investigate the structure
       console.log("Contract fetch result:", result);
   
       if (result && result.output && result.output.isOk) {
-        setMessages(result.output.toString());
+        // Convert output to string or expected type based on contract logic
+        const fetchedMessages = result.output.toHuman();
+        console.log("Fetched messages:", fetchedMessages);
+        setMessages(fetchedMessages ? fetchedMessages.toString() : 'No messages found.');
       } else {
         setMessages('No messages found or error occurred.');
       }
